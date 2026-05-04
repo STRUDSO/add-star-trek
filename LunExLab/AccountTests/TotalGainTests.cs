@@ -5,13 +5,12 @@ using LunEx;
 namespace AccountTests
 {
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
 
-    [TestClass]
     public class TotalGainTests
     {
-        [TestMethod]
+        [Fact]
         public void WhenUsingLunEx()
         {
             // given
@@ -23,10 +22,10 @@ namespace AccountTests
             // Current price of HE3 was 42 when we wrote this...
 
             // when/then
-            Assert.AreEqual(1220L, account.TotalGain(lots, symbol, new LunExServices()));
+            Assert.Equal(1220L, account.TotalGain(lots, symbol, new LunExServices()));
         }
 
-        [TestMethod]
+        [Fact]
         public void WhenUsingInteger()
         {
             // given
@@ -36,7 +35,7 @@ namespace AccountTests
             Account account = new Account();
 
             // when/then
-            Assert.AreEqual(1220L, account.TotalGain(lots, 42));
+            Assert.Equal(1220L, account.TotalGain(lots, 42));
         }
     }
 }

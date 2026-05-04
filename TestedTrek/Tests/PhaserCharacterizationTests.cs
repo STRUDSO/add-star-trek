@@ -1,61 +1,57 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 using Untouchables;
 
-[TestClass]
-public class PhaserCharacterizationTests {
+public class PhaserCharacterizationTests : IDisposable {
     private Game game;
     private StubGalaxy context;
 
     const int EnergyInNewGame = 10000;
 
-    [TestCleanup]
-    public void RemoveTheMockRandomGeneratorForOtherTests_IReallyWantToRefactorThatStaticVariableSoon() {
+    public void Dispose() {
         Game.generator = new Random();
     }
 
-    [TestInitialize]
-    public void SetUp() {
+    public PhaserCharacterizationTests() {
         game = new Game();
         context = new StubGalaxy();
         context.SetValueForTesting("command", "phaser");
     }
 
-    [TestMethod]
+    [Fact]
     public void PhasersNotFiredWithInsufficientEnergy() {
         // delete the following line at your own peril!
         // some (not all) reasonable implementation refactorings could fetch and access the Klingon target earlier;
         // without a Klingon, they get a null reference exception from this test.
         context.SetValueForTesting("target", new Klingon(1234));
-        
+
         context.SetValueForTesting("amount", (EnergyInNewGame + 1).ToString());
         game.FireWeapon(context);
-        Assert.AreEqual("Insufficient energy to fire phasers! || ",
+        Assert.Equal("Insufficient energy to fire phasers! || ",
             context.GetAllOutput());
     }
 
-    [TestMethod]
+    [Fact]
     public void PhasersFiredWhenKlingonOutOfRange_AndEnergyExpendedAnyway() {
         int maxPhaserRange = 4000;
         int outOfRange = maxPhaserRange + 1;
         int amountToFire = 1000;
         context.SetValueForTesting("amount", $"{amountToFire}");
         context.SetValueForTesting("target", new Klingon(outOfRange));
-        
+
         game.FireWeapon(context);
-        
-        Assert.AreEqual($"Klingon out of range of phasers at {outOfRange} sectors... || ",
+
+        Assert.Equal($"Klingon out of range of phasers at {outOfRange} sectors... || ",
             context.GetAllOutput());
-        Assert.AreEqual(EnergyInNewGame - amountToFire, game.EnergyRemaining());
+        Assert.Equal(EnergyInNewGame - amountToFire, game.EnergyRemaining());
     }
 
-    [TestMethod]
+    [Fact]
     public void PhasersFiredKlingonDestroyed() {
         StubKlingon klingon = new StubKlingon(2000, 301);
         int amountToFire = 1000;
@@ -64,27 +60,27 @@ public class PhaserCharacterizationTests {
         Game.generator = new StubRandom(new int[] { 199 });
 
         game.FireWeapon(context);
-        
-        Assert.AreEqual("Phasers hit Klingon at 2000 sectors with 301 units || Klingon destroyed! || ",
+
+        Assert.Equal("Phasers hit Klingon at 2000 sectors with 301 units || Klingon destroyed! || ",
             context.GetAllOutput());
-        Assert.AreEqual(EnergyInNewGame - amountToFire, game.EnergyRemaining());
-        Assert.IsTrue(klingon.DeleteWasCalled());
+        Assert.Equal(EnergyInNewGame - amountToFire, game.EnergyRemaining());
+        Assert.True(klingon.DeleteWasCalled());
     }
-    
-    [TestMethod]
+
+    [Fact]
     public void PhaserDamageDisplaysKlingonRemainingEnergy() {
         int amountToFire = 500;
         context.SetValueForTesting("amount", $"{amountToFire}");
         context.SetValueForTesting("target", new Klingon(2000, 3200));
         Game.generator = new StubRandom(new int[] { 102 });
         game.FireWeapon(context);
-        Assert.AreEqual(
+        Assert.Equal(
             $"Phasers hit Klingon at 2000 sectors with 148 units || Klingon has 3052 remaining || ",
             context.GetAllOutput());
-        Assert.AreEqual(EnergyInNewGame - amountToFire, game.EnergyRemaining());
+        Assert.Equal(EnergyInNewGame - amountToFire, game.EnergyRemaining());
     }
 
-    [TestMethod]
+    [Fact]
     public void PhasersDamageOfZeroStillHits_BUG31415()
     {
         // It's a bug!  I *ask* to fire zero, and I still hit with 1 point.
@@ -97,15 +93,15 @@ public class PhaserCharacterizationTests {
         context.SetValueForTesting("amount", $"{minimalFired}");
         context.SetValueForTesting("target", new Klingon(maxPhaserRange, 201));
         Game.generator = new StubRandom(new int[] { leastAmountOfRandomDamage });
-        
+
         game.FireWeapon(context);
-        
-        Assert.AreEqual(
+
+        Assert.Equal(
             $"Phasers hit Klingon at {maxPhaserRange} sectors with {minimalHit} units || Klingon has 200 remaining || ",
             context.GetAllOutput());
     }
 
-    [TestMethod]
+    [Fact]
     public void MakeSureAPIDoes_NOT_Change_See_SampleClient_in_StarTrekConsoleApp()
     {
         const String requiredSignature = "public Void FireWeapon(WebGadget)";
@@ -118,11 +114,11 @@ public class PhaserCharacterizationTests {
             if (requiredSignature == Signature(nextMethod))
                 found = true;
         }
-        
-        Assert.IsTrue(found, 
+
+        Assert.True(found,
             $"To keep SampleClient happy, Game must retain method with signature '{requiredSignature}'");
     }
-    
+
     private static string Signature(MethodInfo methodInfo)
     {
         String[] parameters = methodInfo.GetParameters()
@@ -133,4 +129,3 @@ public class PhaserCharacterizationTests {
     }
 
 }
-

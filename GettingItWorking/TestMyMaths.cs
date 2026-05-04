@@ -1,20 +1,19 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace GettingItWorking
 {
-    [TestClass]
     public class TestMyMaths
     {
-        [TestMethod]
+        [Fact]
         public void Square_CanSquareTwo()
         {
-            Assert.AreEqual(4, MyMaths.Square(2));
+            Assert.Equal(4, MyMaths.Square(2));
         }
 
-        [TestMethod]
+        [Fact]
         public void Square_CanSquareThree()
         {
-            Assert.AreEqual(9, MyMaths.Square(3));
+            Assert.Equal(9, MyMaths.Square(3));
         }
 
     }
