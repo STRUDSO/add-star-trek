@@ -1,83 +1,21 @@
-﻿<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props" Condition="Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9398B6B0-7194-42AD-9C20-4A7AEC4A5FBF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MSTests</RootNamespace>
-    <AssemblyName>MSTests</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="StubGalaxy.cs" />
-    <Compile Include="StubKlingon.cs" />
-    <Compile Include="StubRandom.cs" />
-    <Compile Include="PhaserCharacterizationTests.cs" />
-    <Compile Include="PhotonCharacterizationTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\StarTrekWebGadgets\StarTrekWebGadgets.csproj">
-      <Project>{D3BAF628-8D76-4665-88C6-EC0A18F9EAF2}</Project>
-      <Name>StarTrekWebGadgets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StarTrek\StarTrek.csproj">
-      <Project>{644AB580-E1E7-4E0B-A925-E36F18EFB2BB}</Project>
-      <Name>StarTrek</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>MSTests</RootNamespace>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.props'))" />
-    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets'))" />
-  </Target>
-  <Import Project="..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.3.0.2\build\net462\MSTest.TestAdapter.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="3.7.3" />
+        <PackageReference Include="MSTest.TestFramework" Version="3.7.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\StarTrek\StarTrek.csproj" />
+        <ProjectReference Include="..\StarTrekWebGadgets\StarTrekWebGadgets.csproj" />
+    </ItemGroup>
+
 </Project>
