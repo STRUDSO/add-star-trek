@@ -5,19 +5,15 @@ using Untouchables;
 public class Game {
 
 	private int energy = 10000;
-	private int torpedos = 8;
+	private readonly TorpedoCannon cannon = new(8);
 
-    public int EnergyRemaining() {
+	public int EnergyRemaining() {
         return energy;
     }
 
     public int Torpedoes {
-        set {
-            torpedos = value;
-        }
-        get {
-            return torpedos;
-        }
+        set => cannon.Torpedoes = value;
+        get => cannon.Torpedoes;
     }
 
     public void FireWeapon(WebGadget wg) {
@@ -26,46 +22,30 @@ public class Game {
 
     public void FireWeapon(Galaxy galaxy)
     {
-	    var target = galaxy.Target();
 	    if (galaxy.IsPhaser())
-        {
-	        if (EnoughEnergyForPhaser(energy, galaxy)) {
-		        if (OutOfRangeForPhase(target)) {
-			        galaxy.WriteLine("Klingon out of range of phasers at " + target.Distance() + " sectors...");
-		        } else {
-			        var damage = CalculateDamage(galaxy, target);
-			        galaxy.WriteLine("Phasers hit Klingon at " + target.Distance() + " sectors with " + damage + " units");
-			        CalculateImpact(galaxy, damage, target);
-		        }
-		        
-		        energy -= galaxy.PhaserEnergy();
-	        } else {
-		        galaxy.WriteLine("Insufficient energy to fire phasers!");
-	        }
-        } else if (galaxy.IsPhoton())
-        {
-	        var enemy = target;
-	        if (torpedos  > 0) {
-		        int distance = enemy.Distance();
-		        if ((Rnd(4) + ((distance / 500) + 1) > 7)) {
-			        galaxy.WriteLine("Torpedo missed Klingon at " + distance + " sectors...");
-		        } else {
-			        int damage = 800 + Rnd(50);
-			        galaxy.WriteLine("Photons hit Klingon at " + distance + " sectors with " + damage + " units");
-			        if (damage < enemy.GetEnergy()) {
-				        enemy.SetEnergy(enemy.GetEnergy() - damage);
-				        galaxy.WriteLine("Klingon has " + enemy.GetEnergy() + " remaining");
-			        } else {
-				        galaxy.WriteLine("Klingon destroyed!");
-				        enemy.Delete();
-			        }
-		        }
-		        torpedos -= 1;
+	    {
+		    if (!EnoughEnergyForPhaser(energy, galaxy))
+		    {
+			    galaxy.WriteLine("Insufficient energy to fire phasers!");
+			    return;
+		    }
 
-	        } else {
-		        galaxy.WriteLine("No more photon torpedoes!");
-	        }
-        }
+		    if (OutOfRangeForPhase(galaxy.Target()))
+		    {
+			    galaxy.WriteLine("Klingon out of range of phasers at " + galaxy.Target().Distance() + " sectors...");
+		    }
+		    else
+		    {
+			    var damage = CalculateDamage(galaxy, galaxy.Target());
+			    galaxy.WriteLine("Phasers hit Klingon at " + galaxy.Target().Distance() + " sectors with " + damage + " units");
+			    CalculateImpact(galaxy, damage, galaxy.Target());
+		    }
+
+		    energy -= galaxy.PhaserEnergy();
+	    } else if (galaxy.IsPhoton())
+	    {
+		    cannon.FireAtTarget(galaxy);
+	    }
     }
 
     private static void CalculateImpact(Galaxy galaxy, int damage, Klingon target)
