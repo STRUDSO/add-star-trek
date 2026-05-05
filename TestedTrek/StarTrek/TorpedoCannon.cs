@@ -1,10 +1,8 @@
-public class FireTorpedoes(Galaxy galaxy)
+public class FireTorpedoes(Klingon target)
 {
-    public Galaxy Galaxy { get; } = galaxy;
-
     public Klingon Target()
     {
-        return Galaxy.Target();
+        return target;
     }
 }
 
@@ -12,29 +10,27 @@ public class TorpedoCannon(int torpedos)
 {
     public int Torpedoes { get; set; } = torpedos;
 
-    public void FireAtTarget(FireTorpedoes fireTorpedoes)
+    public void FireAtTarget(FireTorpedoes fireTorpedoes, Action<string> log)
     {
-        Klingon target = fireTorpedoes.Target();
-        
         if (this.Torpedoes  > 0) {
-            if (Game.Rnd(4) + ((target.Distance() / 500) + 1) > 7) {
-                fireTorpedoes.Galaxy.WriteLine("Torpedo missed Klingon at " + target.Distance() + " sectors...");
+            if (Game.Rnd(4) + ((fireTorpedoes.Target().Distance() / 500) + 1) > 7) {
+                log("Torpedo missed Klingon at " + fireTorpedoes.Target().Distance() + " sectors...");
             } else {
                 int damage = 800 + Game.Rnd(50);
-                fireTorpedoes.Galaxy.WriteLine("Photons hit Klingon at " + target.Distance() + " sectors with " + damage + " units");
-                if (damage < target.GetEnergy()) {
-                    target.SetEnergy(target.GetEnergy() - damage);
-                    fireTorpedoes.Galaxy.WriteLine("Klingon has " + target.GetEnergy() + " remaining");
+                log("Photons hit Klingon at " + fireTorpedoes.Target().Distance() + " sectors with " + damage + " units");
+                if (damage < fireTorpedoes.Target().GetEnergy()) {
+                    fireTorpedoes.Target().SetEnergy(fireTorpedoes.Target().GetEnergy() - damage);
+                    log("Klingon has " + fireTorpedoes.Target().GetEnergy() + " remaining");
                 } else {
-                    fireTorpedoes.Galaxy.WriteLine("Klingon destroyed!");
-                    target.Delete();
+                    log("Klingon destroyed!");
+                    fireTorpedoes.Target().Delete();
                 }
             }
             this.Torpedoes -= 1;
 		    
 			
         } else {
-            fireTorpedoes.Galaxy.WriteLine("No more photon torpedoes!");
+            log("No more photon torpedoes!");
         }
     }
 }
