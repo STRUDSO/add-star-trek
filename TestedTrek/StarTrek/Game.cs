@@ -27,7 +27,7 @@ public class Game {
 		    phaser.FireAtTarget(command, galaxy.WriteLine);
 	    } else if (galaxy.IsPhoton())
 	    {
-		    cannon.FireAtTarget(galaxy);
+		    cannon.FireAtTarget(new FireTorpedoes(galaxy));
 	    }
     }
 
