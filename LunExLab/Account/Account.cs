@@ -5,6 +5,10 @@ namespace Accounts
 
     public class Account
     {
+        public long TotalGain(Lot[] lots, string currentPrice, ITC.SecurityExchangeTransmissionInterface lunExServices)
+        {
+            return TotalGain(lots, lunExServices.CurrentPrice(currentPrice));
+        }
 
         public long TotalGain(Lot[] lots, int currentPrice)
         {
