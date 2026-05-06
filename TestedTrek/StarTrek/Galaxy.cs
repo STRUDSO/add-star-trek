@@ -27,4 +27,26 @@ public class Galaxy {
     public virtual void WriteLine(string message) {
         webContext.WriteLine(message);
     }
+
+    public int PhaserEnergy()
+    {
+        int phaserEnergy = int.Parse(Parameter("amount"));
+        return phaserEnergy;
+    }
+
+    public Klingon Target()
+    {
+        Klingon enemy = (Klingon) Variable("target");
+        return enemy;
+    }
+
+    public bool IsPhaser()
+    {
+        return Parameter("command").Equals("phaser");
+    }
+
+    public bool IsPhoton()
+    {
+        return Parameter("command").Equals("photon");
+    }
 }
