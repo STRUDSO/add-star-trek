@@ -4,9 +4,7 @@
       Phasers hit Klingon at 0 sectors with 958 units,
       Klingon destroyed!
     ],
-    klingon: {
-      deleted: true
-    },
+    deleteCalled: true,
     game: {
       e: 9000
     }
@@ -15,9 +13,7 @@
     messages: [
       Torpedo missed Klingon at 0 sectors...
     ],
-    klingon: {
-      deleted: false
-    },
+    deleteCalled: false,
     game: {
       e: 10000
     }

@@ -2,16 +2,43 @@
 using System.Collections.Generic;
 using Untouchables;
 
+public class WebGadgetProxy
+{
+	private readonly WebGadget _wg;
+	public string Parameter(string parameterName)
+	{
+		return _wg.Parameter(parameterName);
+	}
+
+	public object Variable(string variableName)
+	{
+		return _wg.Variable(variableName);
+	}
+
+	public virtual void WriteLine(string message)
+	{
+		_wg.WriteLine(message);
+	}
+
+	public WebGadgetProxy(WebGadget wg)
+	{
+		_wg = wg;
+	}
+        
+}
 public class Game {
 	public int e = 10000;
 	private int t = 8;
 
 	public void FireWeapon(WebGadget wg)
 	{
-		FireWeapon_(wg, wg.WriteLine, Rnd);
+		FireWeapon_(new WebGadgetProxy(wg),
+			s => wg.WriteLine(s),
+			i => Rnd(i),
+			x => x.Delete());
 	}
 
-	public void FireWeapon_(WebGadget wg, Action<string> writeLine, Func<int, int> rnd)
+	public void FireWeapon_(WebGadgetProxy wg, Action<string> writeLine, Func<int, int> rnd, Action<Klingon> deleteKlingon)
 	{
 		if (wg.Parameter("command").Equals("phaser")) {
 			int amount = int.Parse(wg.Parameter("amount"));
@@ -28,9 +55,10 @@ public class Game {
 					if (damage < enemy.GetEnergy()) {
 						enemy.SetEnergy(enemy.GetEnergy() - damage);
 						writeLine("Klingon has " + enemy.GetEnergy() + " remaining");
-					} else {
+					} else
+					{
 						writeLine("Klingon destroyed!");
-						enemy.Delete();
+						deleteKlingon(enemy);
 					}
 				}
 				e -= amount;
@@ -53,7 +81,7 @@ public class Game {
 						writeLine("Klingon has " + enemy.GetEnergy() + " remaining");
 					} else {
 						writeLine("Klingon destroyed!");
-						enemy.Delete();
+						deleteKlingon(enemy);
 					}
 				}
 				t -= 1;
