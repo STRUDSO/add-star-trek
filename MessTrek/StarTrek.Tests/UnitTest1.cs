@@ -7,22 +7,33 @@ public class UnitTest1
     [Fact]
     public async Task Test1()
     {
-        var command = "phaser";
-        var amount = 1000;
-        List<string> messages = [];
+        IEnumerable<string> commands = [
+            "phaser",
+            "photon",
+        ];
+        IEnumerable<int> amounts = [
+            1000,
+        ];
         
-        var game = new Game();
-        var klingon = new TestableKlignon(0, 0);
-        var webGadget = new WebGadget(command, amount.ToString(), klingon);
-        game.FireWeapon_(webGadget, messages.Add, (_dontcare) => 42);
+        await Combination().Verify(Target, commands, amounts);
+        return;
+
+        static object Target(string command, int amount)
+        {
+            List<string> messages = [];
         
-        await Verify(new { messages, klingon, game });
-        
+            var game = new Game();
+            var klingon = new KlingnonSpy(0, 0);
+            var webGadget = new WebGadget(command, amount.ToString(), klingon);
+            game.FireWeapon_(webGadget, messages.Add, (_dontcare) => 42);
+
+            return new { messages, klingon, game };
+        }
     }
-    
-    class TestableKlignon : Klingon {
+
+    class KlingnonSpy : Klingon {
         public bool deleted;
-        public TestableKlignon(int distance, int energy) : base(distance, energy) {}
+        public KlingnonSpy(int distance, int energy) : base(distance, energy) {}
 
         override public void Delete()
         {

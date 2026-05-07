@@ -1,12 +1,25 @@
 ﻿{
-  messages: [
-    Phasers hit Klingon at 0 sectors with 958 units,
-    Klingon destroyed!
-  ],
-  klingon: {
-    deleted: true
+  phaser, 1000: {
+    messages: [
+      Phasers hit Klingon at 0 sectors with 958 units,
+      Klingon destroyed!
+    ],
+    klingon: {
+      deleted: true
+    },
+    game: {
+      e: 9000
+    }
   },
-  game: {
-    e: 9000
+  photon, 1000: {
+    messages: [
+      Torpedo missed Klingon at 0 sectors...
+    ],
+    klingon: {
+      deleted: false
+    },
+    game: {
+      e: 10000
+    }
   }
 }
