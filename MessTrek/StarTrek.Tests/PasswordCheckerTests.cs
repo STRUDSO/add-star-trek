@@ -4,13 +4,15 @@ public class PasswordCheckerTests
 {
     private const string StrongNoneAdminPassword = "abcd1234";
     private const string BreaksLengthRule = "abcd123";
+    private const string BreaksDigitRule = "abcdabcd";
+    private const string BreaksCharacterRule = "12345678";
 
     [Theory]
-    [InlineData(PasswordStrength.Weak, "abcdabcd")]
+    [InlineData(PasswordStrength.Weak, BreaksDigitRule)]
     [InlineData(PasswordStrength.Strong, StrongNoneAdminPassword)]
     [InlineData(PasswordStrength.Weak, BreaksLengthRule)]
     [InlineData(PasswordStrength.Weak, "")]
-    [InlineData(PasswordStrength.Weak, "12345678")]
+    [InlineData(PasswordStrength.Weak, BreaksCharacterRule)]
     public void CheckWeakPassword_MissingDigit(PasswordStrength expected, string input)
     {
         Assert.Equal(expected, PasswordChecker(input));
@@ -36,12 +38,15 @@ public class PasswordCheckerTests
         Assert.Equal(PasswordStrength.Weak, passwordChecker2.Verdict);
     }
     
-    [Fact]
-    public void PasswordChecker2_BreaksLengthRule_Weak()
+    [Theory]
+    [InlineData(BreaksLengthRule, "To short, hon!")]
+    [InlineData(BreaksDigitRule, "N0 numb3rzzz!")]
+    [InlineData(BreaksCharacterRule, "Missing 4lph4num3ric bro0!")]
+    public void PasswordChecker2_BreaksLengthRule_Weak(string password, string expectedReason)
     {
-        var passwordChecker2 = PasswordChecker2(BreaksLengthRule);
+        var passwordChecker2 = PasswordChecker2(password);
         
-        Assert.Equal(["To short, hon!"], passwordChecker2.Reasons);
+        Assert.Equal([expectedReason], passwordChecker2.Reasons);
     }
     
     [Fact]
@@ -55,8 +60,6 @@ public class PasswordCheckerTests
 
     private PasswordStrength PasswordChecker(string password)
     {
-        if(DoesNotHave(password, char.IsDigit)) return PasswordStrength.Weak;
-        if(DoesNotHave(password, char.IsLetter)) return PasswordStrength.Weak;
         return PasswordChecker2(password).Verdict;
     }
 
@@ -64,6 +67,8 @@ public class PasswordCheckerTests
     {
         List<string> reasons = [];
         if(password.Length <= 7) reasons.Add("To short, hon!");
+        if(DoesNotHave(password, char.IsDigit)) reasons.Add("N0 numb3rzzz!");
+        if(DoesNotHave(password, char.IsLetter)) reasons.Add("Missing 4lph4num3ric bro0!");
         var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
         return (passwordStrength, [..reasons]);
     }
