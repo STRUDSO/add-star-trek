@@ -2,44 +2,76 @@ namespace StarTrek.Tests;
 
 public class PasswordCheckerTests
 {
-    /*
-     * Use Test-Driven Development to develop a simple, in-process, easy-
-       to-use password-strength-checking API. The caller shouldn’t have to
-       have knowledge of what checks are being done to the password
-       string. A simple Boolean return value of true (strong enough) or false
-       (too weak) is wanted.
-       In order to be an acceptably strong password, a string must…
-       £ Have a length greater than 7 characters.
-       £ Contain at least one alphabetic character.
-       £ Contain at least one digit.
-       When you are done building it, please answer the following:
-       Did you have a prior test fail when a subsequent test was made to
-       pass? If so, what did you do in response to that issue?
-     */
+    private const string StrongNoneAdminPassword = "abcd1234";
+    private const string BreaksLengthRule = "abcd123";
+
     [Theory]
     [InlineData(PasswordStrength.Weak, "abcdabcd")]
-    [InlineData(PasswordStrength.Strong, "abcd1234")]
-    [InlineData(PasswordStrength.Weak, "abcd123")]
+    [InlineData(PasswordStrength.Strong, StrongNoneAdminPassword)]
+    [InlineData(PasswordStrength.Weak, BreaksLengthRule)]
     [InlineData(PasswordStrength.Weak, "")]
     [InlineData(PasswordStrength.Weak, "12345678")]
     public void CheckWeakPassword_MissingDigit(PasswordStrength expected, string input)
     {
         Assert.Equal(expected, PasswordChecker(input));
     }
+    
+    /*
+     *  Some clients want a way to obtain a list of all the reasons why
+       the password is not strong enough.
+       
+       £ Some clients want to be able to pass a Boolean “Admin” flag
+       
+       to the API and, if true, the password must also…
+       £ Be > 10 characters long.
+       £ Contain a special character.
+       £ Have a special character or digit as the last character.
+     */
+
+    [Fact]
+    public void PasswordChecker2_Simple_Weak()
+    {
+        var passwordChecker2 = PasswordChecker2("");
+        
+        Assert.Equal(PasswordStrength.Weak, passwordChecker2.Verdict);
+    }
+    
+    [Fact]
+    public void PasswordChecker2_BreaksLengthRule_Weak()
+    {
+        var passwordChecker2 = PasswordChecker2(BreaksLengthRule);
+        
+        Assert.Equal(["To short, hon!"], passwordChecker2.Reasons);
+    }
+    
+    [Fact]
+    public void PasswordChecker2_Strong_Strong()
+    {
+        var passwordChecker2 = PasswordChecker2(StrongNoneAdminPassword);
+        
+        Assert.Equal(PasswordStrength.Strong, passwordChecker2.Verdict);
+    }
+
+
+    private PasswordStrength PasswordChecker(string password)
+    {
+        if(DoesNotHave(password, char.IsDigit)) return PasswordStrength.Weak;
+        if(DoesNotHave(password, char.IsLetter)) return PasswordStrength.Weak;
+        return PasswordChecker2(password).Verdict;
+    }
+
+    private (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password)
+    {
+        List<string> reasons = [];
+        if(password.Length <= 7) reasons.Add("To short, hon!");
+        var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
+        return (passwordStrength, [..reasons]);
+    }
 
 
     public enum PasswordStrength
     {
         Weak, Strong
-    }
-
-    private PasswordStrength PasswordChecker(string password)
-    {
-        if(password.Length <= 7) return PasswordStrength.Weak;
-        if(DoesNotHave(password, char.IsDigit)) return PasswordStrength.Weak;
-        if(DoesNotHave(password, char.IsLetter)) return PasswordStrength.Weak;
-        
-        return PasswordStrength.Strong;
     }
 
     private static bool DoesNotHave(string password, Func<char, bool> isDigit) 
