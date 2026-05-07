@@ -1,0 +1,12 @@
+﻿{
+  messages: [
+    Phasers hit Klingon at 0 sectors with 958 units,
+    Klingon destroyed!
+  ],
+  klingon: {
+    deleted: true
+  },
+  game: {
+    e: 9000
+  }
+}

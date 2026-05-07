@@ -25,7 +25,7 @@ public class Klingon {
 		energy = e;
 	}
 
-	public void Delete() {
+	public virtual void Delete() {
 		// does nothing...yet!
 	}
 
