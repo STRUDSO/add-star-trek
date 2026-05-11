@@ -59,7 +59,7 @@ public class PasswordCheckerTests
     [InlineData("123456789a0", "Missing special character")]
     [InlineData("123456789!a", "Missing special character in the end, br0!")]
     [InlineData("123456789aa", "Missing special character", "Missing special character in the end, br0!")]
-    public void FailingPasswordsTests(string password, params string[] expectedReason)
+    public void PasswordChecker2_AdminPasswords_Weak(string password, params string[] expectedReason)
     {
         var passwordChecker2 = PasswordChecker.PasswordChecker2(password, PasswordChecker.PasswordRequirements.Admin);
 
