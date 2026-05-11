@@ -22,7 +22,7 @@ public static class PasswordChecker
         if (requirements == PasswordRequirements.Admin)
         {
             if (DoesNotHave(password, c => c == '!')) reasons.Add("Missing special character");
-            if (password.Last() != '!') reasons.Add("Missing special character");
+            if (password.Last() != '!' || password.Last() != '0') reasons.Add("Missing special character");
         }
         
         
