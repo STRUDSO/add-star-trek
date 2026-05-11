@@ -8,7 +8,6 @@ public class PasswordCheckerTests
     private const string BreaksLengthRule = "abcd123";
     private const string BreaksDigitRule = "abcdabcd";
     private const string BreaksCharacterRule = "12345678";
-    private const string StrongAdminPassword = "123456789a!";
 
     [Theory]
     [InlineData(PasswordChecker.PasswordStrength.Weak, BreaksDigitRule)]
@@ -48,10 +47,12 @@ public class PasswordCheckerTests
         Assert.Equal(PasswordChecker.PasswordStrength.Strong, passwordChecker2.Verdict);
     }
 
-    [Fact]
-    public void PasswordChecker2_Strong_Admin_Strong()
+    [Theory]
+    [InlineData('!')]
+    [InlineData('0')]
+    public void PasswordChecker2_Strong_Admin_Strong(char specialChar)
     {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2(StrongAdminPassword, PasswordChecker.PasswordRequirements.Admin);
+        var passwordChecker2 = PasswordChecker.PasswordChecker2("12345678!a" + specialChar, PasswordChecker.PasswordRequirements.Admin);
 
         Assert.Equal(PasswordChecker.PasswordStrength.Strong, passwordChecker2.Verdict);
     }
