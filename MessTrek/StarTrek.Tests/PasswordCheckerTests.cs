@@ -1,3 +1,5 @@
+using PasswordChecker = StarTrek.Tests.PasswordChecker;
+
 namespace StarTrek.Tests;
 
 public class PasswordCheckerTests
@@ -18,16 +20,6 @@ public class PasswordCheckerTests
     {
         Assert.Equal(expected, PasswordChecker.Check(input));
     }
-
-    /*
-     *
-       £ Some clients want to be able to pass a Boolean “Admin” flag
-
-       to the API and, if true, the password must also…
-       £ Be > 10 characters long.
-       £ Contain a special character.
-       £ Have a special character or digit as the last character.
-     */
 
     [Fact]
     public void PasswordChecker2_Simple_Weak()
@@ -59,22 +51,34 @@ public class PasswordCheckerTests
     [Fact]
     public void PasswordChecker2_Strong_Admin_Strong()
     {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2(StrongAdminPassword, PasswordRequirements.Admin);
+        var passwordChecker2 = PasswordChecker.PasswordChecker2(StrongAdminPassword, PasswordChecker.PasswordRequirements.Admin);
 
         Assert.Equal(PasswordChecker.PasswordStrength.Strong, passwordChecker2.Verdict);
     }
 
     [Fact]
-    public void PasswordChecker2_Strong_Admin_Weak()
+    public void PasswordChecker2_AdminTooShort_Weak()
     {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2("12345678a!", PasswordRequirements.Admin);
+        var passwordChecker2 = PasswordChecker.PasswordChecker2("12345678a!", PasswordChecker.PasswordRequirements.Admin);
 
         Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
     }
+    
+    [Fact]
+    public void PasswordChecker2_AdminWithoutSpecialChar_Weak()
+    {
+        var passwordChecker2 = PasswordChecker.PasswordChecker2("123456789aa", PasswordChecker.PasswordRequirements.Admin);
+
+        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
+    }
+    
+    /*
+     *
+       £ Some clients want to be able to pass a Boolean “Admin” flag
+
+       to the API and, if true, the password must also…       
+       £ Contain a special character.
+       £ Have a special character or digit as the last character.
+     */
 }
 
-public enum PasswordRequirements
-{
-    Admin,
-    Standard
-}

@@ -1,5 +1,7 @@
 namespace StarTrek.Tests;
 
+
+
 public static class PasswordChecker
 {
     public static PasswordStrength Check(string password)
@@ -7,11 +9,11 @@ public static class PasswordChecker
         return PasswordChecker2(password).Verdict;
     }
 
-    public static (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password, PasswordRequirements requirements = PasswordRequirements.Standard)
+    public static (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password,
+        PasswordRequirements requirements = PasswordRequirements.Standard)
     {
         List<string> reasons = [];
         var passwordLength = requirements == PasswordRequirements.Admin ? 10 : 7;
-
         if (password.Length <= passwordLength) reasons.Add("To short, hon!");
 
         if (DoesNotHave(password, char.IsDigit)) reasons.Add("N0 numb3rzzz!");
@@ -24,6 +26,12 @@ public static class PasswordChecker
     {
         Weak,
         Strong
+    }
+    
+    public enum PasswordRequirements
+    {
+        Admin,
+        Standard
     }
 
     private static bool DoesNotHave(string password, Func<char, bool> isDigit)
