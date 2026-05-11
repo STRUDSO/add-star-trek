@@ -6,6 +6,7 @@ public class PasswordCheckerTests
     private const string BreaksLengthRule = "abcd123";
     private const string BreaksDigitRule = "abcdabcd";
     private const string BreaksCharacterRule = "12345678";
+    private const string StrongAdminPassword = "123456789a!";
 
     [Theory]
     [InlineData(PasswordStrength.Weak, BreaksDigitRule)]
@@ -19,9 +20,7 @@ public class PasswordCheckerTests
     }
     
     /*
-     *  Some clients want a way to obtain a list of all the reasons why
-       the password is not strong enough.
-       
+     *      
        £ Some clients want to be able to pass a Boolean “Admin” flag
        
        to the API and, if true, the password must also…
@@ -57,13 +56,22 @@ public class PasswordCheckerTests
         Assert.Equal(PasswordStrength.Strong, passwordChecker2.Verdict);
     }
 
+    [Fact]
+    public void PasswordChecker2_Strong_Admin_Strong()
+    {
+        var passwordChecker2 = PasswordChecker2(StrongAdminPassword, PasswordRequirements.Admin);
+        
+        Assert.Equal(PasswordStrength.Strong, passwordChecker2.Verdict);
+    }
+
+
 
     private PasswordStrength PasswordChecker(string password)
     {
         return PasswordChecker2(password).Verdict;
     }
 
-    private (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password)
+    private (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password, PasswordRequirements requirements = PasswordRequirements.Standard)
     {
         List<string> reasons = [];
         if(password.Length <= 7) reasons.Add("To short, hon!");
@@ -81,4 +89,10 @@ public class PasswordCheckerTests
 
     private static bool DoesNotHave(string password, Func<char, bool> isDigit) 
         => password.Any(isDigit) is false;
+}
+
+public enum PasswordRequirements
+{
+    Admin,
+    Standard
 }
