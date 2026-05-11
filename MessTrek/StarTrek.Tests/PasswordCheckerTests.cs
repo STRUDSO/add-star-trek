@@ -72,6 +72,14 @@ public class PasswordCheckerTests
         Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
     }
     
+    [Fact]
+    public void PasswordChecker2_AdminNotEndingWithSpecialCharacter_Weak()
+    {
+        var passwordChecker2 = PasswordChecker.PasswordChecker2("123456789!a", PasswordChecker.PasswordRequirements.Admin);
+
+        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
+    }
+    
     /*
      *
        £ Some clients want to be able to pass a Boolean “Admin” flag

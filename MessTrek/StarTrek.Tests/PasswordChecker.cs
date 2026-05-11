@@ -18,6 +18,14 @@ public static class PasswordChecker
 
         if (DoesNotHave(password, char.IsDigit)) reasons.Add("N0 numb3rzzz!");
         if (DoesNotHave(password, char.IsLetter)) reasons.Add("Missing 4lph4num3ric bro0!");
+        
+        if (requirements == PasswordRequirements.Admin)
+        {
+            if (DoesNotHave(password, c => c == '!')) reasons.Add("Missing special character");
+            if (password.Last() != '!') reasons.Add("Missing special character");
+        }
+        
+        
         var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
         return (passwordStrength, [..reasons]);
     }
