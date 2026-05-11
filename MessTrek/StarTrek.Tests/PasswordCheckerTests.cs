@@ -63,6 +63,16 @@ public class PasswordCheckerTests
         
         Assert.Equal(PasswordStrength.Strong, passwordChecker2.Verdict);
     }
+    
+    [Fact]
+    public void PasswordChecker2_Strong_Admin_Weak()
+    {
+        var passwordChecker2 = PasswordChecker2("12345678a!", PasswordRequirements.Admin);
+        
+        Assert.Equal(PasswordStrength.Weak, passwordChecker2.Verdict);
+    }
+    
+    
 
 
 
@@ -74,7 +84,15 @@ public class PasswordCheckerTests
     private (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password, PasswordRequirements requirements = PasswordRequirements.Standard)
     {
         List<string> reasons = [];
-        if(password.Length <= 7) reasons.Add("To short, hon!");
+        if (requirements == PasswordRequirements.Admin)
+        {
+            if (password.Length <= 10) reasons.Add("To short, hon!");
+        }
+        else
+        {
+            if (password.Length <= 7) reasons.Add("To short, hon!");
+        }
+
         if(DoesNotHave(password, char.IsDigit)) reasons.Add("N0 numb3rzzz!");
         if(DoesNotHave(password, char.IsLetter)) reasons.Add("Missing 4lph4num3ric bro0!");
         var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
