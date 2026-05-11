@@ -20,14 +20,6 @@ public class PasswordCheckerTests
         Assert.Equal(expected, PasswordChecker.Check(input));
     }
 
-    [Fact]
-    public void PasswordChecker2_Simple_Weak()
-    {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2("");
-
-        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
-    }
-
     [Theory]
     [InlineData(BreaksLengthRule, "To short, hon!")]
     [InlineData(BreaksDigitRule, "N0 numb3rzzz!")]
@@ -39,12 +31,14 @@ public class PasswordCheckerTests
         Assert.Equal([expectedReason], passwordChecker2.Reasons);
     }
 
-    [Fact]
-    public void PasswordChecker2_Strong_Strong()
+    [Theory]
+    [InlineData(StrongNoneAdminPassword, PasswordChecker.PasswordStrength.Strong)]
+    [InlineData("", PasswordChecker.PasswordStrength.Weak)]
+    public void PasswordChecker2_Strong_Strong(string password, PasswordChecker.PasswordStrength expected)
     {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2(StrongNoneAdminPassword);
+        var passwordChecker2 = PasswordChecker.PasswordChecker2(password);
 
-        Assert.Equal(PasswordChecker.PasswordStrength.Strong, passwordChecker2.Verdict);
+        Assert.Equal(expected, passwordChecker2.Verdict);
     }
 
     [Theory]
@@ -58,38 +52,27 @@ public class PasswordCheckerTests
 
         Assert.Equal(PasswordChecker.PasswordStrength.Strong, passwordChecker2.Verdict);
     }
-
-    [Fact]
-    public void PasswordChecker2_AdminTooShort_Weak()
+    
+    [Theory]
+    [InlineData("12345678a!",  PasswordChecker.PasswordStrength.Weak, "To short, hon!")]
+    [InlineData("12345a!",     PasswordChecker.PasswordStrength.Weak, "To short, hon!")]
+    [InlineData("123456789a0", PasswordChecker.PasswordStrength.Weak, "Missing special character")]
+    [InlineData("123456789!a", PasswordChecker.PasswordStrength.Weak, "Missing special character in the end, br0!")]
+    public void PasswordChecker2_AdminVersion_Strong(string password, PasswordChecker.PasswordStrength expected, string expectedReason)
     {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2("12345678a!", PasswordChecker.PasswordRequirements.Admin);
+        var passwordChecker2 = PasswordChecker.PasswordChecker2(password, PasswordChecker.PasswordRequirements.Admin);
 
-        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
+        Assert.Equal(expected, passwordChecker2.Verdict);
+        Assert.Equal([expectedReason], passwordChecker2.Reasons);
     }    
     
     [Fact]
-    public void PasswordChecker2_NoSpecialChars_Weak()
-    {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2("123456789a0", PasswordChecker.PasswordRequirements.Admin);
-
-        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
-    }
-    
-    [Fact]
-    public void PasswordChecker2_AdminWithoutSpecialChar_Weak()
+    public void PasswordChecker2_AdminVersion_MultipleFailures_Strong()
     {
         var passwordChecker2 = PasswordChecker.PasswordChecker2("123456789aa", PasswordChecker.PasswordRequirements.Admin);
 
         Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
+        Assert.Equal(["Missing special character", "Missing special character in the end, br0!"], passwordChecker2.Reasons);
     }
-    
-    [Fact]
-    public void PasswordChecker2_AdminNotEndingWithSpecialCharacter_Weak()
-    {
-        var passwordChecker2 = PasswordChecker.PasswordChecker2("123456789!a", PasswordChecker.PasswordRequirements.Admin);
-
-        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
-    }
-    
 }
 

@@ -38,7 +38,7 @@ public static class PasswordChecker
         List<char> specialCharacters = ['!', '*'];
 
         if (DoesNotHave(password, c => c == '!')) reasons.Add("Missing special character");
-        if (!specialCharacters.Contains(password.Last()) && !char.IsDigit(password.Last())) reasons.Add("Missing special character");
+        if (!specialCharacters.Contains(password.Last()) && !char.IsDigit(password.Last())) reasons.Add("Missing special character in the end, br0!");
         return reasons;
     }
 
