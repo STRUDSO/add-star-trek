@@ -49,7 +49,9 @@ public class PasswordCheckerTests
 
     [Theory]
     [InlineData('!')]
+    [InlineData('*')]
     [InlineData('0')]
+    [InlineData('1')]
     public void PasswordChecker2_Strong_Admin_Strong(char specialChar)
     {
         var passwordChecker2 = PasswordChecker.PasswordChecker2("12345678!a" + specialChar, PasswordChecker.PasswordRequirements.Admin);
@@ -61,6 +63,14 @@ public class PasswordCheckerTests
     public void PasswordChecker2_AdminTooShort_Weak()
     {
         var passwordChecker2 = PasswordChecker.PasswordChecker2("12345678a!", PasswordChecker.PasswordRequirements.Admin);
+
+        Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
+    }    
+    
+    [Fact]
+    public void PasswordChecker2_NoSpecialChars_Weak()
+    {
+        var passwordChecker2 = PasswordChecker.PasswordChecker2("123456789a0", PasswordChecker.PasswordRequirements.Admin);
 
         Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
     }
@@ -81,13 +91,5 @@ public class PasswordCheckerTests
         Assert.Equal(PasswordChecker.PasswordStrength.Weak, passwordChecker2.Verdict);
     }
     
-    /*
-     *
-       £ Some clients want to be able to pass a Boolean “Admin” flag
-
-       to the API and, if true, the password must also…       
-       £ Contain a special character.
-       £ Have a special character or digit as the last character.
-     */
 }
 

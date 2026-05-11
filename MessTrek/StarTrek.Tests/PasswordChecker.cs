@@ -12,24 +12,35 @@ public static class PasswordChecker
     public static (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password,
         PasswordRequirements requirements = PasswordRequirements.Standard)
     {
-        List<string> reasons = [];
+        var reasons = StandReasons(password, requirements);
+        if (requirements == PasswordRequirements.Admin)
+        {
+            reasons.AddRange(Admin(password));
+        }
+
+        var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
+        return (passwordStrength, [..reasons]);
+    }
+
+    private static List<string> Admin(string password)
+    {
+        var reasons = new List<string>();
+        List<char> specialCharacters = ['!','*'];
+            
+        if (DoesNotHave(password, c => c == '!')) reasons.Add("Missing special character");
+        if (!specialCharacters.Contains(password.Last()) && !char.IsDigit(password.Last())) reasons.Add("Missing special character");
+        return reasons;
+    }
+
+    private static List<string> StandReasons(string password, PasswordRequirements requirements)
+    {
+        var reasons = new List<string>();
         var passwordLength = requirements == PasswordRequirements.Admin ? 10 : 7;
         if (password.Length <= passwordLength) reasons.Add("To short, hon!");
 
         if (DoesNotHave(password, char.IsDigit)) reasons.Add("N0 numb3rzzz!");
         if (DoesNotHave(password, char.IsLetter)) reasons.Add("Missing 4lph4num3ric bro0!");
-        
-        if (requirements == PasswordRequirements.Admin)
-        {
-            List<char> specialCharacters = ['!', '0'];
-            
-            // if (DoesNotHave(password, c => c == '!')) reasons.Add("Missing special character");
-            if (!specialCharacters.Contains(password.Last())) reasons.Add("Missing special character");
-        }
-        
-        
-        var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
-        return (passwordStrength, [..reasons]);
+        return reasons;
     }
 
     public enum PasswordStrength
