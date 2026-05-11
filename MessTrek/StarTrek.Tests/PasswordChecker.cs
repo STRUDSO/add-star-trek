@@ -1,7 +1,5 @@
 namespace StarTrek.Tests;
 
-
-
 public static class PasswordChecker
 {
     public static PasswordStrength Check(string password)
@@ -12,30 +10,41 @@ public static class PasswordChecker
     public static (PasswordStrength Verdict, string[] Reasons) PasswordChecker2(string password,
         PasswordRequirements requirements = PasswordRequirements.Standard)
     {
-        var reasons = StandReasons(password, requirements);
-        if (requirements == PasswordRequirements.Admin)
-        {
-            reasons.AddRange(Admin(password));
-        }
+        var isAdmin = requirements == PasswordRequirements.Admin;
+
+        var reasons = Reasons(password, isAdmin);
 
         var passwordStrength = reasons.Any() ? PasswordStrength.Weak : PasswordStrength.Strong;
         return (passwordStrength, [..reasons]);
     }
 
+    private static List<string> Reasons(string password, bool isAdmin)
+    {
+        if (isAdmin)
+        {
+            var reasons = StandReasons(password, 10);
+            reasons.AddRange(Admin(password));
+            return reasons;
+        }
+        else
+        {
+            return StandReasons(password, 7);
+        }
+    }
+
     private static List<string> Admin(string password)
     {
         var reasons = new List<string>();
-        List<char> specialCharacters = ['!','*'];
-            
+        List<char> specialCharacters = ['!', '*'];
+
         if (DoesNotHave(password, c => c == '!')) reasons.Add("Missing special character");
         if (!specialCharacters.Contains(password.Last()) && !char.IsDigit(password.Last())) reasons.Add("Missing special character");
         return reasons;
     }
 
-    private static List<string> StandReasons(string password, PasswordRequirements requirements)
+    private static List<string> StandReasons(string password, int passwordLength)
     {
         var reasons = new List<string>();
-        var passwordLength = requirements == PasswordRequirements.Admin ? 10 : 7;
         if (password.Length <= passwordLength) reasons.Add("To short, hon!");
 
         if (DoesNotHave(password, char.IsDigit)) reasons.Add("N0 numb3rzzz!");
@@ -48,7 +57,7 @@ public static class PasswordChecker
         Weak,
         Strong
     }
-    
+
     public enum PasswordRequirements
     {
         Admin,
